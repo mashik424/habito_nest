@@ -1,0 +1,65 @@
+import {
+  Controller,
+  Post,
+  Body,
+  Request,
+  UseGuards,
+  Get,
+} from '@nestjs/common';
+import { AuthService } from './auth.service';
+import { JwtAuthGuard } from './jwt-auth.guard';
+import { IsEmail, IsString, MinLength } from 'class-validator';
+import { Request as ExpressRequest } from 'express';
+
+export class RegisterDto {
+  @IsString()
+  @MinLength(2)
+  name: string;
+
+  @IsEmail()
+  email: string;
+
+  @IsString()
+  @MinLength(6)
+  password: string;
+}
+
+export class LoginDto {
+  @IsEmail()
+  email: string;
+
+  @IsString()
+  password: string;
+}
+
+interface RequestWithUser extends ExpressRequest {
+  user: {
+    id: number;
+    email: string;
+  };
+}
+
+@Controller('auth')
+export class AuthController {
+  constructor(private authService: AuthService) {}
+
+  @Post('register')
+  async register(@Body() registerDto: RegisterDto) {
+    return this.authService.register(
+      registerDto.name,
+      registerDto.email,
+      registerDto.password,
+    );
+  }
+
+  @Post('login')
+  login(@Body() req: LoginDto) {
+    return this.authService.login(req.email, req.password);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  getProfile(@Request() req: RequestWithUser) {
+    return req.user;
+  }
+}
