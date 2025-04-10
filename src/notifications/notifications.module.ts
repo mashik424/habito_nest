@@ -13,9 +13,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         redis: {
           name: 'habit-reminders',
           url: configService.get<string>('UPSTASH_REDIS_URL'),
-          maxRetriesPerRequest: 50,
-          connectTimeout: 10000,
-          retryStrategy: (times) => Math.min(times * 100, 2000),
+          tls: {
+            rejectUnauthorized: false,
+          },
+          maxRetriesPerRequest: 1,
+          enableReadyCheck: false,
         },
       }),
     }),
