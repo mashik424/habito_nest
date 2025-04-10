@@ -11,21 +11,34 @@ import { HabitsModule } from './habits/habits.module';
 import { HabitLogsModule } from './habit-logs/habit-logs.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'habito_nest',
-      password: '0&gf0F£k491m',
-      database: 'habito',
-      entities: [User, Habit],
-      synchronize: true,
-      logging: true,
+    ConfigModule.forRoot({
+      isGlobal: true, // makes config accessible app-wide without importing again
     }),
-    MongooseModule.forRoot('mongodb://localhost:27017/habito'),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        url: configService.get<string>('POSTGRES_URL'),
+        autoLoadEntities: true,
+        synchronize: false, // disable in prod and use migrations
+        entities: [User, Habit],
+        ssl: {
+          rejectUnauthorized: false,
+        },
+      }),
+    }),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGO_ROOT'),
+      }),
+      inject: [ConfigService],
+    }),
     UsersModule,
     AuthModule,
     HabitsModule,
