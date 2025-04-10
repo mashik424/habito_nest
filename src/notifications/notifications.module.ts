@@ -8,8 +8,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     BullModule.registerQueueAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
+      name: 'habit-reminders',
       useFactory: (configService: ConfigService) => ({
-        name: 'habit-reminders',
         redis: {
           name: 'habit-reminders',
           url: configService.get<string>('UPSTASH_REDIS_URL'),
