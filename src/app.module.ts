@@ -6,6 +6,7 @@ import { User } from './users/entities/user.entity';
 import { Habit } from './habits/entities/habit.entity';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
+import { BullModule } from '@nestjs/bull';
 import { UsersModule } from './users/users.module';
 import { HabitsModule } from './habits/habits.module';
 import { HabitLogsModule } from './habit-logs/habit-logs.module';
@@ -37,6 +38,17 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         uri: configService.get<string>('MONGO_ROOT'),
+      }),
+    }),
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        redis: {
+          name: 'habit-reminders',
+          url: configService.get<string>('UPSTASH_REDIS_URL'),
+          tls: {}, // required for Upstash
+        },
       }),
     }),
     UsersModule,
