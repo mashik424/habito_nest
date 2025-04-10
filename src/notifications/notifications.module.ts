@@ -13,6 +13,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         redis: {
           name: 'habit-reminders',
           url: configService.get<string>('UPSTASH_REDIS_URL'),
+          tls: {},
         },
       }),
     }),
