@@ -25,7 +25,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         type: 'postgres',
         url: configService.get<string>('POSTGRES_URL'),
         autoLoadEntities: true,
-        synchronize: false, // disable in prod and use migrations
+        synchronize: true, // disable in prod and use migrations
         entities: [User, Habit],
         ssl: {
           rejectUnauthorized: false,
