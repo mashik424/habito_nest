@@ -45,6 +45,7 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
+    console.log('~~Registering user:', registerDto);
     return this.authService.register(
       registerDto.name,
       registerDto.email,
@@ -54,6 +55,7 @@ export class AuthController {
 
   @Post('login')
   login(@Body() req: LoginDto) {
+    console.log('~~Logging in user:', req);
     return this.authService.login(req.email, req.password);
   }
 
