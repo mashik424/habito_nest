@@ -1,17 +1,22 @@
-import { Processor, Process } from '@nestjs/bull';
-import { Job } from 'bull';
+import { Job, Worker } from 'bullmq';
+import Redis from 'ioredis';
 
 export interface ReminderJobData {
   userId: number;
   habitId: number;
 }
 
-@Processor('habit-reminders')
-export class NotificationsProcessor {
-  @Process('send-reminder')
-  handleReminder(job: Job<ReminderJobData>) {
-    const { userId, habitId } = job.data;
-    console.log(`Sending reminder to User ${userId} for Habit ${habitId}`);
-    // TODO: Integrate Email/SMS/Push notifications
-  }
-}
+const redis = new Redis(process.env.UPSTASH_REDIS_URL!, {
+  tls: { rejectUnauthorized: false },
+});
+
+new Worker(
+  'habit-reminders',
+  async (job: Job<ReminderJobData>) => {
+    console.log('Sending reminder to:', job.data.userId);
+    return Promise.resolve();
+  },
+  {
+    connection: redis,
+  },
+);
