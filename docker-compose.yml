@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - mongodb
+      - redis
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: habito_nest
+      POSTGRES_PASSWORD: CwH2cNxs96CAahnPKMJ6wWprMpTqnd59
+      POSTGRES_DB: habito
+    ports:
+      - '5432:5432'
+
+  mongodb:
+    image: mongo:6
+    ports:
+      - '27017:27017'
+
+  redis:
+    image: redis:7
+    ports:
+      - '6379:6379'

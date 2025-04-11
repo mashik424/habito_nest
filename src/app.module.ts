@@ -37,7 +37,7 @@ import { RedisModule } from './redis/redis.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGO_ROOT'),
+        uri: configService.get<string>('MONGODB_URI'),
       }),
     }),
     UsersModule,
